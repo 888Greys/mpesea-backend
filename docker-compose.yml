@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  mpesa-backend:
+    build: .
+    container_name: mpesa-tracker
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///./data/mpesa_tracker.db}
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+      - DAILY_LIMIT=${DAILY_LIMIT:-2000}
+      - WARNING_THRESHOLD=${WARNING_THRESHOLD:-0.7}
+      - HOST=0.0.0.0
+      - PORT=8000
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - mpesa-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Optional: PostgreSQL database (uncomment if you want to use PostgreSQL)
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: mpesa-postgres
+  #   restart: unless-stopped
+  #   environment:
+  #     - POSTGRES_USER=mpesa_user
+  #     - POSTGRES_PASSWORD=mpesa_password
+  #     - POSTGRES_DB=mpesa_tracker
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - mpesa-network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U mpesa_user"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+networks:
+  mpesa-network:
+    driver: bridge
+
+volumes:
+  # postgres_data:
+  data:
+  logs:

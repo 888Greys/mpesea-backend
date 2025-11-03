@@ -27,3 +27,7 @@ build/
 
 logs/
 *.log
+
+# Docker volumes
+data/
+backups/
