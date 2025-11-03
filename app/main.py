@@ -55,6 +55,16 @@ async def receive_sms(payload: SmsPayload, db: Session = Depends(get_db)):
         print(f"\n📱 Received SMS from: {payload.sender}")
         print(f"📄 Message: {payload.message[:100]}...")
 
+        # Handle test messages from Android app
+        if payload.sender == "TEST" or "test" in payload.message.lower():
+            print("🧪 Test message detected - sending Slack notification")
+            test_message = "🧪 **Test Message Received!**\n\n✅ Your M-Pesa tracker is working perfectly!\n\nThe app can now forward SMS to the backend, and you'll get notifications for real M-Pesa transactions."
+            await send_slack_notification(test_message)
+            return JSONResponse(
+                status_code=200,
+                content={"status": "success", "message": "Test notification sent to Slack"}
+            )
+
         # Parse M-Pesa message
         parsed = MpesaParser.parse(payload.sender, payload.message)
         
