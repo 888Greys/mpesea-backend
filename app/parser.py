@@ -7,8 +7,8 @@ class MpesaParser:
     """Parse M-Pesa SMS messages and extract transaction details"""
 
     TRANSACTION_TYPES = {
-        "SENT": ["sent to", "paid to", "transferred to"],
-        "RECEIVED": ["received from", "you have received"],
+        "SENT": ["you have sent", "sent to", "paid to", "transferred to"],
+        "RECEIVED": ["you have received", "received from"],
         "WITHDRAWN": ["withdraw", "withdrawn from"],
         "BOUGHT": ["bought", "airtime for"],
         "BALANCE": ["balance was", "your balance is"],
